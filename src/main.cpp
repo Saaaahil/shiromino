@@ -3,6 +3,7 @@
    game settings, manage main data structures
 */
 
+#include <switch.h>
 #include "core.h"
 #include "file_io.h"
 #include "random.h"
@@ -25,6 +26,15 @@ bool file_exists(const char *filename)
 
 int main(int argc, char *argv[])
 {
+    socketInitializeDefault(); // Sets up the network sockets for nxlink
+    nxlinkStdio();             // Sets up printf to be passed to our nxlink server on the computer
+
+    //gfxInitDefault();
+    printf("got to main \n");
+
+    //romfsInit();
+    //chdir("romfs:/");
+
     coreState cs;
     coreState_initialize(&cs);
     struct settings *s = NULL;
@@ -35,79 +45,80 @@ int main(int argc, char *argv[])
     string slash = "/";
     string cfg_filename;
 
-    game_t *distr_test = NULL;
+    //game_t *distr_test = NULL;
 
-    cs.calling_path = (char *)malloc(strlen(path) + 1);
-    strcpy(cs.calling_path, path);
+    //cs.calling_path = (char *)malloc(strlen(path) + 1);
+    //strcpy(cs.calling_path, path);
 
-    g123_seeds_init();
-    /*
-       g2_output_seed_syncs();
-       goto error;
+    //g123_seeds_init();
+    ///*
+    //   g2_output_seed_syncs();
+    //   goto error;
 
-       g2_output_sync_histogram();
-       goto error;
-    */
-    switch(argc)
-    {
-        case 1:
-            if(!file_exists(cfg.c_str()))
-            {
-                log_err("Couldn't find configuration file , aborting\n");
-                goto error;
-            }
+    //   g2_output_sync_histogram();
+    //   goto error;
+    //*/
+    //switch(argc)
+    //{
+    //    case 1:
+    //        if(!file_exists(cfg.c_str()))
+    //        {
+    //            printf("Couldn't find configuration file , aborting\n");
+    //            goto error;
+    //        }
 
-            s = parse_cfg(cfg.c_str());
-            if(!s)
-            {
-                log_info("Using default settings\n");
-            }
+    //        s = parse_cfg(cfg.c_str());
+    //        if(!s)
+    //        {
+    //            log_info("Using default settings\n");
+    //        }
 
-            cfg_filename = calling_path;
-            cfg_filename.append(slash);
-            cfg_filename.append(cfg);
+    //        cfg_filename = calling_path;
+    //        cfg_filename.append(slash);
+    //        cfg_filename.append(cfg);
 
-            cs.cfg_filename = (char *)(cfg_filename.c_str());
-            break;
+    //        cs.cfg_filename = (char *)(cfg_filename.c_str());
+    //        break;
 
-        case 2:
-            if(strcmp(argv[1], "-?") == 0 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
-            {
-                printf("Usage: %s [path to config file]\n", argv[0]);
-                coreState_destroy(&cs);
-                return 0;
-            }
+    //    case 2:
+    //        if(strcmp(argv[1], "-?") == 0 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+    //        {
+    //            printf("Usage: %s [path to config file]\n", argv[0]);
+    //            coreState_destroy(&cs);
+    //            return 0;
+    //        }
 
-            /*
-            if(strcmp(argv[1], "--pento-distr-test") == 0) {
-               //random_distr_test(cs, 0, 100000);
-               goto error;
-            } else if(strcmp(argv[1], "--list-tgm-seeds") == 0) {
-               get_tgm_seed_count(0);
-               goto error;
-            } else if(strcmp(argv[1], "--output") == 0) {
-               verify_tgm_rand_periodicity(0);
-               goto error;
-            } else if(strcmp(argv[1], "--seed-avg-sync") == 0) {
-               seed_avg_sync(0x20);
-               goto error;
-            }*/
+    //        /*
+    //        if(strcmp(argv[1], "--pento-distr-test") == 0) {
+    //           random_distr_test(cs, 0, 100000);
+    //           goto error;
+    //        } else if(strcmp(argv[1], "--list-tgm-seeds") == 0) {
+    //           get_tgm_seed_count(0);
+    //           goto error;
+    //        } else if(strcmp(argv[1], "--output") == 0) {
+    //           verify_tgm_rand_periodicity(0);
+    //           goto error;
+    //        } else if(strcmp(argv[1], "--seed-avg-sync") == 0) {
+    //           seed_avg_sync(0x20);
+    //           goto error;
+    //        }*/
 
-            // check(access(argv[1], F_OK) == 0, "File does not exist");
+    //         check(access(argv[1], F_OK) == 0, "File does not exist");
 
-            s = parse_cfg(argv[1]);
-            check(s, "File could not be opened for reading");
+    //        s = parse_cfg(argv[1]);
+    //        check(s, "File could not be opened for reading");
 
-            cs.cfg_filename = (char *)malloc(strlen(argv[1]) + 1);
-            strcpy(cs.cfg_filename, argv[1]);
-            break;
+    //        cs.cfg_filename = (char *)malloc(strlen(argv[1]) + 1);
+    //        strcpy(cs.cfg_filename, argv[1]);
+    //        break;
 
-        default:
-            printf("Usage: %s [path to config file]\n", argv[0]);
-            goto error;
-    }
+    //    default:
+    //        printf("Usage: %s [path to config file]\n", argv[0]);
+    //        goto error;
+    //}
 
-    printf("Finished reading configuration file: %s\n", cs.cfg_filename);
+    //printf("Finished reading configuration file: %s\n", cs.cfg_filename);
+    s = parse_cfg(cfg.c_str());
 
     if(init(&cs, s))
     {
@@ -121,10 +132,13 @@ int main(int argc, char *argv[])
 
     quit(&cs);
     coreState_destroy(&cs);
-
+    //romfsExit();
+    socketExit();
     return 0;
 
 error:
-    coreState_destroy(&cs);
-    return 1;
+    //coreState_destroy(&cs);
+    //romfsExit();
+    socketExit();
+    return 0;
 }

@@ -1,15 +1,16 @@
 #ifndef __SCOREDB_H_
 #define __SCOREDB_H_
 
-struct sqlite3;
-typedef struct sqlite3 sqlite3;
+//struct sqlite3;
+//typedef struct sqlite3 sqlite3;
 
 struct replay;
 struct player;
 
 struct scoredb
 {
-    sqlite3 *db;
+    //sqlite3 *db;
+    int score;
 };
 
 void scoredb_init(struct scoredb *s, const char *filename);

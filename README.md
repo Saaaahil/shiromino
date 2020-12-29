@@ -1,6 +1,6 @@
-# shiromino
+# shiromino_switch
 
 ## Building
-Dependencies: SDL2 (version >= 2.0.5), SDL2_image, SDL2_mixer
+Dependencies: devkitPro (run installer for switch development), use pacman to get: switch-sdl2, switch-sdl2_image, switch-sdl2_mixer
 
 Run `make' in the base directory.

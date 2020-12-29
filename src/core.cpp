@@ -19,7 +19,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "SGUIL/SGUIL.hpp"
+#include "SGUIL.hpp"
+#include <switch.h>
 
 using namespace std;
 
@@ -88,7 +89,7 @@ struct bindings defaultkeybinds[2] = {
 
     {SDLK_j, SDLK_l, SDLK_i, SDLK_k, SDLK_TAB, SDLK_r, SDLK_e, SDLK_w, SDLK_q, SDLK_F11}};
 
-struct settings defaultsettings = {&defaultkeybinds[0], 1, true, false, 50, 100, 100, NULL};
+struct settings defaultsettings = {&defaultkeybinds[0], 1, true, true, 80, 100, 100, "ARK"};
 
 /* </constants> */
 
@@ -249,7 +250,7 @@ void coreState_initialize(coreState *cs)
     cs->mouse_left_down = 0;
     cs->mouse_right_down = 0;
 
-    cs->screen.name = "Shiromino v.beta2";
+    cs->screen.name = (char*)"Shiromino v.beta2";
     cs->screen.w = 640;
     cs->screen.h = 480;
     cs->screen.window = NULL;
@@ -314,11 +315,18 @@ void coreState_destroy(coreState *cs)
 
 static void load_image(coreState *cs, gfx_image *img, const char *filename)
 {
+    romfsInit();
+    chdir("romfs:/");
     string path = make_path(cs->settings->home_path, "gfx", filename, "");
-    if(!img_load(img, (const char *)path.c_str(), cs))
+    /*if(!img_load(img, (const char *)path.c_str(), cs))
+    {
+        log_warn("Failed to load image '%s'", filename);
+    }*/
+    if(!img_load(img, filename, cs))
     {
         log_warn("Failed to load image '%s'", filename);
     }
+    romfsExit();
 }
 
 static void load_bitfont(BitFont *font, gfx_image *sheetImg, gfx_image *outlineSheetImg, unsigned int charW, unsigned int charH)
@@ -340,6 +348,8 @@ static int load_asset_volume(coreState *cs, const char *filename)
 
 static void load_sfx(coreState *cs, struct sfx *s, const char *filename)
 {
+    romfsInit();
+    chdir("romfs:/audio/");
     string path = make_path(cs->settings->home_path, "audio", filename, "");
     if(!sfx_load( s, (const char *)path.c_str() ))
     {
@@ -347,10 +357,13 @@ static void load_sfx(coreState *cs, struct sfx *s, const char *filename)
     }
 
     s->volume = load_asset_volume(cs, filename);
+    romfsExit();
 }
 
 static void load_music(coreState *cs, struct music *m, const char *filename)
 {
+    romfsInit();
+    chdir("romfs:/audio/");
     string path = make_path(cs->settings->home_path, "audio", filename, "");
     if(!music_load( m, (const char *)path.c_str() ))
     {
@@ -358,6 +371,7 @@ static void load_music(coreState *cs, struct music *m, const char *filename)
     }
 
     m->volume = load_asset_volume(cs, filename);
+    romfsExit();
 }
 
 int load_files(coreState *cs)
@@ -488,28 +502,28 @@ int init(coreState *cs, struct settings *s)
             }
         }
 
-        cs->screen.w = cs->settings->video_scale * 640;
+        cs->screen.w = cs->settings->video_scale * 848;
         cs->screen.h = cs->settings->video_scale * 480;
         unsigned int w = cs->screen.w;
         unsigned int h = cs->screen.h;
+        //printf("width: %s\n", w);
         name = cs->screen.name;
 
-        int windowFlags = SDL_WINDOW_RESIZABLE;
+        int windowFlags = SDL_WINDOW_FULLSCREEN;
 
         cs->screen.window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, windowFlags);
         check(cs->screen.window != NULL, "SDL_CreateWindow: Error: %s\n", SDL_GetError());
-        cs->screen.renderer =
-            SDL_CreateRenderer(cs->screen.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+        cs->screen.renderer = SDL_CreateRenderer(cs->screen.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
         check(cs->screen.renderer != NULL, "SDL_CreateRenderer: Error: %s\n", SDL_GetError());
 
-        SDL_SetWindowMinimumSize(cs->screen.window, 640, 480);
+        SDL_SetWindowMinimumSize(cs->screen.window, 848, 480);
         if(cs->settings->fullscreen)
         {
-            SDL_SetWindowSize(cs->screen.window, 640, 480);
+            SDL_SetWindowSize(cs->screen.window, 848, 480);
             SDL_SetWindowFullscreen(cs->screen.window, SDL_WINDOW_FULLSCREEN);
         }
 
-        SDL_RenderSetLogicalSize(cs->screen.renderer, 640, 480);
+        SDL_RenderSetLogicalSize(cs->screen.renderer, 848, 480);
         if(!cs->settings->video_stretch)
         {
             SDL_RenderSetIntegerScale(cs->screen.renderer, SDL_TRUE);
@@ -611,8 +625,11 @@ void quit(coreState *cs)
     gfx_quit(cs);
 
     IMG_Quit();
+    Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
+    romfsExit();
+    return;
 }
 
 int run(coreState *cs)
@@ -902,23 +919,57 @@ int procevents(coreState *cs)
                     if(rc && k->a == 0)
                         k->a = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 3);
+                    rc = SDL_JoystickGetButton(joy, 1);
                     if(!rc)
                         k->b = 0;
                     if(rc && k->b == 0)
                         k->b = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 5);
+                    rc = SDL_JoystickGetButton(joy, 2);
                     if(!rc)
                         k->c = 0;
                     if(rc && k->c == 0)
                         k->c = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 1);
+                    rc = SDL_JoystickGetButton(joy, 3);
                     if(!rc)
                         k->d = 0;
                     if(rc && k->d == 0)
                         k->d = 1;
+
+                    rc = SDL_JoystickGetButton(joy, 10);
+                    if(!rc)
+                        k->escape = 0;
+                    if(rc && k->escape == 0)
+                        k->escape = 1;
+
+                    //dpad up
+                    rc = SDL_JoystickGetButton(joy, 13);
+                    if(!rc)
+                        k->up = 0;
+                    if(rc && k->up == 0)
+                        k->up = 1;
+
+                    // dpad down
+                    rc = SDL_JoystickGetButton(joy, 15);
+                    if(!rc)
+                        k->down = 0;
+                    if(rc && k->down == 0)
+                        k->down = 1;
+
+                    // dpad left
+                    rc = SDL_JoystickGetButton(joy, 12);
+                    if(!rc)
+                        k->left = 0;
+                    if(rc && k->left == 0)
+                        k->left = 1;
+
+                    // dpad right
+                    rc = SDL_JoystickGetButton(joy, 14);
+                    if(!rc)
+                        k->right = 0;
+                    if(rc && k->right == 0)
+                        k->right = 1;
                 }
 
                 break;

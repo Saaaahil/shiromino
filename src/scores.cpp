@@ -1,7 +1,7 @@
 #include "scores.h"
 #include "replay.h"
 
-#include <sqlite3.h>
+//#include <sqlite3.h>
 
 #include "zed_dbg.h"
 
@@ -15,7 +15,7 @@ static const int MAX_PLAYER_NAME_LENGTH = 64;
 void scoredb_init(struct scoredb *s, const char *filename)
 {
 {
-    int ret = sqlite3_open_v2(filename, &s->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+ /*   int ret = sqlite3_open_v2(filename, &s->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
     check(ret == SQLITE_OK, "Could not open/create sqlite database: %s", sqlite3_errmsg(s->db));
 
     const char enableForeignKeysSql[] =
@@ -52,6 +52,8 @@ void scoredb_init(struct scoredb *s, const char *filename)
         ");";
 
     ret = sqlite3_exec(s->db, createTableSql, NULL, NULL, NULL);
+*/
+    int ret = 0;
     check(ret == 0, "Could not create scores table");
 
     log_info("Opened scoredb %s", filename);
@@ -65,13 +67,14 @@ void scoredb_init(struct scoredb *s, const char *filename)
 
 void scoredb_terminate(struct scoredb *s)
 {
-    sqlite3_close(s->db);
+    return;
+    //sqlite3_close(s->db);
 }
 
 struct scoredb *scoredb_create(const char *filename)
 {
     struct scoredb *s = (scoredb *) malloc(sizeof(struct scoredb));
-    scoredb_init(s, filename);
+    //scoredb_init(s, filename);
 
     return s;
 }
@@ -85,7 +88,7 @@ void scoredb_destroy(struct scoredb *s)
 
 void scoredb_create_player(struct scoredb *s, struct player *out_player, const char *playerName)
 {
-    sqlite3_stmt *sql;
+/*    sqlite3_stmt *sql;
 {
     const char insertPlayerSql[] =
         "INSERT OR IGNORE INTO players (name)"
@@ -126,11 +129,13 @@ void scoredb_create_player(struct scoredb *s, struct player *out_player, const c
 
  error:
     sqlite3_finalize(sql);
+    */
+    return;
 }
 
 void scoredb_update_player(struct scoredb *s, struct player *p)
 {
-    sqlite3_stmt *sql;
+/*    sqlite3_stmt *sql;
 {
     const char updatePlayerSql[] =
         "UPDATE players "
@@ -152,12 +157,14 @@ void scoredb_update_player(struct scoredb *s, struct player *p)
 
  error:
     sqlite3_finalize(sql);
+*/
+    return;
 }
 
 #define REPLAY_DESCRIPTOR_BUF_SIZE 64
 void scoredb_add(struct scoredb *s, struct player* p, struct replay *r)
 {
-    sqlite3_stmt *sql;
+/*    sqlite3_stmt *sql;
 {
     char replayDescriptor[REPLAY_DESCRIPTOR_BUF_SIZE];
 
@@ -188,11 +195,13 @@ void scoredb_add(struct scoredb *s, struct player* p, struct replay *r)
 
  error:
     sqlite3_finalize(sql);
+    */
+    return;
 }
 
 int scoredb_get_replay_count(struct scoredb *s, struct player *p)
 {
-    sqlite3_stmt *sql;
+/*    sqlite3_stmt *sql;
     int replayCount = 0;
 {
     const char getReplayCountSql[] =
@@ -214,15 +223,17 @@ int scoredb_get_replay_count(struct scoredb *s, struct player *p)
     sqlite3_finalize(sql);
 
     return replayCount;
+*/
+    return 0;
 }
 
 struct replay *scoredb_get_replay_list(struct scoredb *s, struct player *p, int *out_replayCount)
 {
-    sqlite3_stmt *sql;
+//    sqlite3_stmt *sql;
     const int replayCount = scoredb_get_replay_count(s, p);
     struct replay *replayList = (struct replay *) malloc(sizeof(struct replay) * replayCount);
 {
-    // TODO: Pagination? Current interface expects a full list of replays
+/*    // TODO: Pagination? Current interface expects a full list of replays
     const char getReplayListSql[] =
         "SELECT scoreId, mode, grade, startLevel, level, time, date "
         "FROM scores "
@@ -246,10 +257,11 @@ struct replay *scoredb_get_replay_list(struct scoredb *s, struct player *p, int 
         replayList[i].time           = sqlite3_column_int(sql, 5);
         replayList[i].date           = sqlite3_column_int(sql, 6);
     }
+*/
 }
 
  error:
-    sqlite3_finalize(sql);
+    //sqlite3_finalize(sql);
 
     *out_replayCount = replayCount;
     return replayList;
@@ -258,7 +270,7 @@ struct replay *scoredb_get_replay_list(struct scoredb *s, struct player *p, int 
 
 void scoredb_get_full_replay(struct scoredb *s, struct replay *out_replay, int replay_id)
 {
-    sqlite3_stmt *sql;
+/*    sqlite3_stmt *sql;
 {
     const char *getReplaySql =
         "SELECT replay FROM scores "
@@ -279,11 +291,13 @@ void scoredb_get_full_replay(struct scoredb *s, struct replay *out_replay, int r
 
  error:
     sqlite3_finalize(sql);
+    */
+    return;
 }
 
 void scoredb_get_full_replay_by_condition(struct scoredb *s, struct replay *out_replay, int mode)
 {
-    sqlite3_stmt *sql;
+    /*sqlite3_stmt *sql;
 {
     const char *getReplaySql =
         "SELECT replay FROM scores "
@@ -305,5 +319,7 @@ void scoredb_get_full_replay_by_condition(struct scoredb *s, struct replay *out_
 }
 
  error:
-    sqlite3_finalize(sql);
+    sqlite3_finalize(sql);\
+    */
+    return;
 }

@@ -13,7 +13,7 @@
 #define PDPREFERWKICK 0x00000020
 #define PDAIRBORNEFKICKS 0x00000040
 
-enum { FLAT = 0, CW = 1, FLIP = 2, CCW = 3 };
+enum { FLAT = 0, CW = 3, FLIP = 2, CCW = 1 };
 
 typedef struct
 {

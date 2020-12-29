@@ -9,6 +9,7 @@
 
 #include "core.h"
 #include "audio.h"
+#include <switch.h>
 
 static void play_track(coreState *cs, Mix_Music *m, int volume)
 {
@@ -32,11 +33,14 @@ static void play_sfx(Mix_Chunk *c, int volume)
 
 bool music_load(struct music *m, const char *path_without_ext)
 {
+    romfsInit();
+    chdir("romfs:/");
     m->data = NULL;
     m->volume = MIX_MAX_VOLUME;
 
     bstring path = bfromcstr(path_without_ext);
     bcatcstr(path, ".ogg");
+    //printf("path: '%s' \n", (const char *)(path->data));
     m->data = Mix_LoadMUS((const char *)(path->data));
     bdestroy(path);
     if(m->data)
@@ -48,6 +52,7 @@ bool music_load(struct music *m, const char *path_without_ext)
     bdestroy(path);
 
     return m->data != NULL;
+    romfsExit();
 }
 
 void music_play(struct music *m, coreState *cs)
@@ -63,15 +68,19 @@ void music_destroy(struct music *m)
 
 bool sfx_load(struct sfx *s, const char *path_without_ext)
 {
+    romfsInit();
+    chdir("romfs:/");
     s->data = NULL;
     s->volume = MIX_MAX_VOLUME;
 
     bstring path = bfromcstr(path_without_ext);
     bcatcstr(path, ".wav");
+    //printf("path: '%s' \n", (const char *)(path->data));
     s->data = Mix_LoadWAV((const char *)(path->data));
     bdestroy(path);
 
     return s->data != NULL;
+    romfsExit();
 }
 
 void sfx_play(struct sfx *s)

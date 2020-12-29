@@ -19,18 +19,18 @@ using namespace std;
 
 struct settings *parse_cfg(const char *filename)
 {
-    if(!filename)
+    /*if(!filename)
     {
         return NULL;
-    }
+    }*/
 
     struct settings *s = (struct settings *)malloc(sizeof(struct settings));
-    vector<string> cfg_file_lines = split_file(filename);
+    vector<string> cfg_file_lines;
 
-    if(cfg_file_lines.empty())
-    {
-        printf("Error splitting config file\n");
-    }
+    //if(cfg_file_lines.empty())
+    //{
+    //    printf("Error splitting config file\n");
+    //}
 
     string sfxvolume = "SFXVOLUME";
     string musicvolume = "MUSICVOLUME";
@@ -98,33 +98,33 @@ struct settings *parse_cfg(const char *filename)
 
 long get_cfg_option(vector<string>& lines, string label)
 {
-    for(auto str : lines)
-    {
-        if(str[0] == '#')
-        {
-            continue;
-        }
+    //for(auto str : lines)
+    //{
+    //    if(str[0] == '#')
+    //    {
+    //        continue;
+    //    }
 
-        if(str.find(label) == 0)
-        {
-            vector<string> tokens = strtools::words(str);
-            if(!tokens.empty())
-            {
-                return parse_long(tokens.back().c_str());
-            }
-            else
-            {
-                return OPTION_INVALID;
-            }
-        }
-    }
+    //    if(str.find(label) == 0)
+    //    {
+    //        vector<string> tokens = strtools::words(str);
+    //        if(!tokens.empty())
+    //        {
+    //            return parse_long(tokens.back().c_str());
+    //        }
+    //        else
+    //        {
+    //            return OPTION_INVALID;
+    //        }
+    //    }
+    //}
 
     return OPTION_INVALID;
 }
 
 char *get_cfg_string(vector<string>& lines, string label)
 {
-    for(auto str : lines)
+    /*for(auto str : lines)
     {
         if(str[0] == '#')
         {
@@ -145,7 +145,7 @@ char *get_cfg_string(vector<string>& lines, string label)
                 return NULL;
             }
         }
-    }
+    }*/
 
     return NULL;
 }
@@ -189,7 +189,7 @@ struct bindings *get_cfg_bindings(vector<string>& lines)
     SDL_Keycode *keyptrs[9] = {
         &bindings->left, &bindings->right, &bindings->up, &bindings->down, &bindings->a, &bindings->b, &bindings->c, &bindings->d, &bindings->escape};
 
-    unsigned int lineIndex = 0;
+    /*unsigned int lineIndex = 0;
     for(auto str : lines)
     {
         if(str[0] == '#')
@@ -238,7 +238,7 @@ struct bindings *get_cfg_bindings(vector<string>& lines)
                 }
             }
         }
-    }
+    }*/
 
     return bindings;
 }

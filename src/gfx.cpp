@@ -13,6 +13,7 @@
 #include "piecedef.h"
 #include "qrs.h"
 #include "timer.h"
+#include <switch.h>
 
 /*
 int gfx_piece_colors[25] =
@@ -48,12 +49,16 @@ int gfx_piece_colors[25] =
 
 bool img_load(gfx_image *img, const char *path_without_ext, coreState *cs)
 {
+    romfsInit();
+    chdir("romfs:/");
     img->tex = NULL;
 
     SDL_Surface *s = NULL;
 
     bstring path = bfromcstr(path_without_ext);
     bcatcstr(path, ".png");
+    //printf("path: '%s' \n", path);
+    //printf("path: '%s' \n", (const char *)(path->data));
     s = IMG_Load((const char *)(path->data));
     bdestroy(path);
 
@@ -72,6 +77,7 @@ bool img_load(gfx_image *img, const char *path_without_ext, coreState *cs)
     }
 
     return img->tex != NULL;
+    romfsExit();
 }
 
 void img_destroy(gfx_image *img)
@@ -1103,8 +1109,8 @@ int gfx_drawtext_partial(coreState *cs, bstring text, int pos, int len, int x, i
         SDL_SetTextureAlphaMod(font->outline_sheet, A(fmt->outline_rgba));
     }
 
-    SDL_Rect src = {.x = 0, .y = 0, .w = font->char_w, .h = font->char_h};
-    SDL_Rect dest = {.x = x, .y = y, .w = fmt->size_multiplier * (float)font->char_w, .h = fmt->size_multiplier * (float)font->char_h};
+    SDL_Rect src = {.x = 0, .y = 0, .w = (int)font->char_w, .h = (int)font->char_h};
+    SDL_Rect dest = {.x = x, .y = y, .w = (int)(fmt->size_multiplier * (float)font->char_w), .h = (int)(fmt->size_multiplier * (float)font->char_h)};
 
     int i = 0;
 
