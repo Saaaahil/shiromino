@@ -7,6 +7,7 @@
 #define QS_CURVE_MAX 19
 #define G1_MASTER_CURVE_MAX 30
 #define G2_MASTER_CURVE_MAX 35
+#define G3_MASTER_CURVE_MAX 40
 #define G2_DEATH_CURVE_MAX 9
 #define G3_TERROR_CURVE_MAX 9
 
@@ -29,6 +30,7 @@
 #define MODE_G1_MASTER 0x0400
 #define MODE_G1_20G    0x0800
 #define MODE_G2_MASTER 0x1000
+#define MODE_G3_MASTER 0x2000
 // should add "variation" codes that change mode behavior (unique code interpretations for each mode maybe)
 
 #define RANDOMIZER_NORMAL 0

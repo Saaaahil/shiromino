@@ -156,6 +156,45 @@ static qrs_timings g2_master_curve[G2_MASTER_CURVE_MAX] =
     {901, 5120, 17, 6, 12, 6, 6}
 };
 
+static qrs_timings g3_master_curve[G3_MASTER_CURVE_MAX] =
+{
+    {0, 4, 30, 14, 25, 25, 40},
+    {30, 6, 30, 14, 25, 25, 40},
+    {35, 8, 30, 14, 25, 25, 40},
+    {40, 10, 30, 14, 25, 25, 40},
+    {50, 12, 30, 14, 25, 25, 40},
+    {60, 16, 30, 14, 25, 25, 40},
+    {70, 32, 30, 14, 25, 25, 40},
+    {80, 48, 30, 14, 25, 25, 40},
+    {90, 64, 30, 14, 25, 25, 40},
+    {100, 80, 30, 14, 25, 25, 40},
+    {120, 96, 30, 14, 25, 25, 40},
+    {140, 112, 30, 14, 25, 25, 40},
+    {160, 128, 30, 14, 25, 25, 40},
+    {170, 144, 30, 14, 25, 25, 40},
+    {200, 4, 30, 14, 25, 25, 40},
+    {220, 32, 30, 14, 25, 25, 40},
+    {230, 64, 30, 14, 25, 25, 40},
+    {233, 96, 30, 14, 25, 25, 40},
+    {236, 128, 30, 14, 25, 25, 40},
+    {239, 160, 30, 14, 25, 25, 40},
+    {243, 192, 30, 14, 25, 25, 40},
+    {247, 224, 30, 14, 25, 25, 40},
+    {251, 256, 30, 14, 25, 25, 40},
+    {300, 512, 30, 14, 25, 25, 40},
+    {330, 768, 30, 14, 25, 25, 40},
+    {360, 1024, 30, 14, 25, 25, 40},
+    {400, 1280, 30, 14, 25, 25, 40},
+    {420, 1024, 30, 14, 25, 25, 40},
+    {450, 768, 30, 14, 25, 25, 40},
+    {500, 5120, 30, 8, 25, 25, 25},
+    {601, 5120, 30, 8, 25, 16, 16},
+    {701, 5120, 30, 8, 16, 12, 12},
+    {801, 5120, 30, 8, 12, 6, 6},
+    {900, 5120, 30, 6, 12, 6, 6},
+    {901, 5120, 17, 6, 12, 6, 6}
+};
+
 static qrs_timings g2_death_curve[G2_DEATH_CURVE_MAX] =
 {
     {0, 5120, 30, 10, 16, 12, 12},
@@ -463,6 +502,7 @@ static void update_music(qrsdata *q, coreState *cs)
             play_or_halt_music(q, cs, &cs->assets->track0, find_music(q->level, pentomino_music));
             break;
 
+        case MODE_G3_MASTER:
         case MODE_G2_MASTER:
             play_or_halt_music(q, cs, &cs->assets->g2_track0, find_music(q->level, g2_master_music));
             break;
@@ -675,6 +715,19 @@ game_t *qs_game_create(coreState *cs, int level, unsigned int flags, int replay_
         flags |= TETROMINO_ONLY;
         flags &= ~SIMULATE_G1;
         flags &= ~SIMULATE_G3;
+
+        // 61.68 "game seconds", or 60 realtime seconds
+        q->credit_roll_counter = 3701;
+    }
+
+    else if(flags & MODE_G3_MASTER)
+    {
+        q->mode_type = MODE_G3_MASTER;
+        q->grade = GRADE_9;
+        flags |= SIMULATE_G3;
+        flags |= TETROMINO_ONLY;
+        flags &= ~SIMULATE_G1;
+        flags &= ~SIMULATE_G2;
 
         // 61.68 "game seconds", or 60 realtime seconds
         q->credit_roll_counter = 3701;
@@ -1245,6 +1298,7 @@ int qs_game_frame(game_t *g)
         update_music(q, cs);
         switch(q->mode_type)
         {
+            case MODE_G3_MASTER:
             case MODE_G2_MASTER:
                 while(q->speed_curve_index < G2_MASTER_CURVE_MAX && g2_master_curve[q->speed_curve_index].level <= q->level)
                 {
@@ -1372,6 +1426,7 @@ int qs_game_frame(game_t *g)
                     (*s) = PSINACTIVE;
                     break;
 
+                case MODE_G3_MASTER:
                 case MODE_G2_MASTER:
                     q->state_flags &= ~(GAMESTATE_CREDITS | GAMESTATE_FADING | GAMESTATE_INVISIBLE);
                     if(q->mroll_unlocked)
@@ -1390,6 +1445,7 @@ int qs_game_frame(game_t *g)
                     }
 
                     (*s) = PSINACTIVE;
+
                     break;
             }
 
@@ -1482,7 +1538,7 @@ int qs_game_frame(game_t *g)
     if((*s) == PSINACTIVE)
         return 0;
 
-    if(q->mode_type == MODE_G2_MASTER)
+    if(q->mode_type == MODE_G2_MASTER || q->mode_type == MODE_G3_MASTER)
     {
         int decay_rate = grade_point_decays[q->internal_grade];
         if(((*s) & PSFALL || (*s) & PSLOCK) && q->combo_simple == 0)
@@ -1597,6 +1653,7 @@ static int qs_are_expired(game_t *g)
             case MODE_G2_DEATH:
             case MODE_G1_20G:
             case MODE_G1_MASTER:
+            case MODE_G3_MASTER:
             case MODE_G2_MASTER:
                 if(q->level != 998)
                 {
@@ -1654,7 +1711,7 @@ static int qs_are_expired(game_t *g)
             q->state_flags &= ~(GAMESTATE_FADING | GAMESTATE_INVISIBLE);
             q->state_flags |= GAMESTATE_CREDITS_TOPOUT;
 
-            if(q->mode_type == MODE_G2_MASTER)
+            if(q->mode_type == MODE_G2_MASTER || q->mode_type == MODE_G3_MASTER)
             {
                 if(q->mroll_unlocked)
                     q->grade = GRADE_M | GREEN_LINE;
@@ -1768,6 +1825,7 @@ int qs_process_lineclear(game_t *g)
 
             switch(q->mode_type)
             {
+                case MODE_G3_MASTER:
                 case MODE_G2_MASTER:
                     if(q->level == 999 && !(q->state_flags & GAMESTATE_CREDITS))
                     {
@@ -2039,6 +2097,7 @@ int qs_process_lockflash(game_t *g)
 
                         break;
 
+                    case MODE_G3_MASTER:
                     case MODE_G2_MASTER:
                         pts = grade_points_table[q->internal_grade][n - 1];
                         combo_mult = g2_grade_point_combo_table[q->combo_simple - 1][n - 1];
@@ -2247,6 +2306,7 @@ int qs_process_lockflash(game_t *g)
 
                             break;
 
+                        case MODE_G3_MASTER:
                         case MODE_G2_MASTER:
                             if(q->level >= 999)
                             {
@@ -2438,6 +2498,7 @@ int qs_process_lockflash(game_t *g)
             {
                 switch(q->mode_type)
                 {
+                    case MODE_G3_MASTER:
                     case MODE_G2_MASTER:
                         if(q->timer->time > 525 * 60 || q->grade < GRADE_S9)
                             q->mroll_unlocked = false;

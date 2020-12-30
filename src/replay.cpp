@@ -72,6 +72,9 @@ void get_replay_descriptor(struct replay *r, char *buffer, size_t bufferLength)
         case MODE_G2_MASTER:
             strncpy(modeStringBuffer, "G2 MASTER", REPLAY_DESCRIPTOR_BUF_SIZE);
             break;
+        case MODE_G3_MASTER:
+            strncpy(modeStringBuffer, "G3 MASTER", REPLAY_DESCRIPTOR_BUF_SIZE);
+            break;
         default:
             break;
     }

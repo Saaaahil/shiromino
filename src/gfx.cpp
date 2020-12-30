@@ -754,6 +754,7 @@ int gfx_drawqrsfield(coreState *cs, grid_t *field, unsigned int mode, unsigned i
             tetrion_qs = cs->assets->g1_tetrion_g1.tex;
             break;
 
+        case MODE_G3_MASTER:
         case MODE_G2_MASTER:
             tetrion_qs = cs->assets->g2_tetrion_g2_master.tex;
             break;

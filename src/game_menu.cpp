@@ -1084,11 +1084,11 @@ int mload_main(game_t *g, int val)
     cs->bg = cs->assets->bg_temp.tex;
     cs->bg_old = cs->bg;
 
-    d->menu = (struct menu_opt **)malloc(13 * sizeof(struct menu_opt *));
+    d->menu = (struct menu_opt **)malloc(14 * sizeof(struct menu_opt *));
     d->menu_id = MENU_ID_MAIN;
     d->use_target_tex = 0;
     d->selection = d->main_menu_data.selection;
-    d->numopts = 13;
+    d->numopts = 14;
     d->title = bfromcstr("MAIN MENU");
     d->x = 4 * 16;
     d->y = 3 * 16;
@@ -1163,7 +1163,8 @@ int mload_main(game_t *g, int val)
     m->label_text_rgba = 0xFFFF40FF;
     m->value_text_rgba = 0xA0A0FFFF;
 
-    d->menu[4] = std_game_multiopt_create(g->origin, MODE_G2_DEATH, 10, bfromcstr("G2 DEATH"));
+
+    d->menu[4] = std_game_multiopt_create(g->origin, MODE_G3_MASTER, 10, bfromcstr("G2.5 MASTER"));
     m = d->menu[4];
     d6 = (struct game_multiopt_data *)m->data;
     if(d->main_menu_data.selection == 4)
@@ -1174,10 +1175,12 @@ int mload_main(game_t *g, int val)
     m->y = 11 * 16;
     m->value_x = m->x + 10 * 16;
     m->value_y = m->y;
-    m->label_text_rgba = 0xFF4040FF;
+    m->label_text_rgba = 0xFFFF40FF;
     m->value_text_rgba = 0xA0A0FFFF;
 
-    d->menu[5] = std_game_multiopt_create(g->origin, MODE_G3_TERROR, 13, bfromcstr("G3 TERROR"));
+
+
+    d->menu[5] = std_game_multiopt_create(g->origin, MODE_G2_DEATH, 10, bfromcstr("G2 DEATH"));
     m = d->menu[5];
     d6 = (struct game_multiopt_data *)m->data;
     if(d->main_menu_data.selection == 5)
@@ -1191,29 +1194,43 @@ int mload_main(game_t *g, int val)
     m->label_text_rgba = 0xFF4040FF;
     m->value_text_rgba = 0xA0A0FFFF;
 
-    d->menu[6] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("MULTI-EDITOR"));
+    d->menu[6] = std_game_multiopt_create(g->origin, MODE_G3_TERROR, 13, bfromcstr("G3 TERROR"));
     m = d->menu[6];
+    d6 = (struct game_multiopt_data *)m->data;
+    if(d->main_menu_data.selection == 6)
+        d6->selection = d->main_menu_data.opt_selection;
+    else
+        d6->selection = 0;
+    m->x = 4 * 16;
+    m->y = 13 * 16;
+    m->value_x = m->x + 10 * 16;
+    m->value_y = m->y;
+    m->label_text_rgba = 0xFF4040FF;
+    m->value_text_rgba = 0xA0A0FFFF;
+
+    d->menu[7] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("MULTI-EDITOR"));
+    m = d->menu[7];
     d1 = (struct action_opt_data *)m->data;
     d1->action = mload_practice;
     d1->val = 0;
     m->x = 4 * 16;
     m->y = 15 * 16;
 
-    d->menu[7] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("REPLAY"));
-    m = d->menu[7];
+    d->menu[8] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("REPLAY"));
+    m = d->menu[8];
     d1 = (struct action_opt_data *)m->data;
     d1->action = mload_replay;
     d1->val = 0;
     m->x = 4 * 16;
     m->y = 16 * 16;
 
-    d->menu[8] = menu_opt_create(MENU_LABEL, NULL, bfromcstr("SETTINGS"));
-    m = d->menu[8];
+    d->menu[9] = menu_opt_create(MENU_LABEL, NULL, bfromcstr("SETTINGS"));
+    m = d->menu[9];
     m->x = 4 * 16;
     m->y = 19 * 16;
 
-    d->menu[9] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("MASTER VOLUME"));
-    m = d->menu[9];
+    d->menu[10] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("MASTER VOLUME"));
+    m = d->menu[10];
     d2 = (struct multi_opt_data *)m->data;
     d2->num = 101;
     d2->param = &g->origin->settings->master_volume;
@@ -1231,8 +1248,8 @@ int mload_main(game_t *g, int val)
     m->value_y = m->y;
     m->value_text_flags = DRAWTEXT_ALIGN_RIGHT | DRAWTEXT_VALUE_BAR;
 
-    d->menu[10] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("SFX VOLUME"));
-    m = d->menu[10];
+    d->menu[11] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("SFX VOLUME"));
+    m = d->menu[11];
     d2 = (struct multi_opt_data *)m->data;
     d2->num = 101;
     d2->param = &g->origin->settings->sfx_volume;
@@ -1250,8 +1267,8 @@ int mload_main(game_t *g, int val)
     m->value_y = m->y;
     m->value_text_flags = DRAWTEXT_ALIGN_RIGHT | DRAWTEXT_VALUE_BAR;
 
-    d->menu[11] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("MUSIC VOLUME"));
-    m = d->menu[11];
+    d->menu[12] = menu_opt_create(MENU_MULTIOPT, NULL, bfromcstr("MUSIC VOLUME"));
+    m = d->menu[12];
     d2 = (struct multi_opt_data *)m->data;
     d2->num = 101;
     d2->param = &g->origin->settings->mus_volume;
@@ -1269,8 +1286,8 @@ int mload_main(game_t *g, int val)
     m->value_y = m->y;
     m->value_text_flags = DRAWTEXT_ALIGN_RIGHT | DRAWTEXT_VALUE_BAR;
 
-    d->menu[12] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("QUIT"));
-    m = d->menu[12];
+    d->menu[13] = menu_opt_create(MENU_ACTION, NULL, bfromcstr("QUIT"));
+    m = d->menu[13];
     d1 = (struct action_opt_data *)m->data;
     d1->action = menu_action_quit;
     d1->val = 0;

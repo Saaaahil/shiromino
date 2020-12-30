@@ -22,6 +22,20 @@
 #include "SGUIL.hpp"
 #include <switch.h>
 
+// some switch buttons
+#define JOY_A 0
+#define JOY_B 1
+#define JOY_X 2
+#define JOY_Y 3
+#define JOY_L3 4
+#define JOY_L1 6
+#define JOY_PLUS 10
+#define JOY_MINUS 11
+#define JOY_LEFT 12
+#define JOY_UP 13
+#define JOY_RIGHT 14
+#define JOY_DOWN 15
+
 using namespace std;
 
 BindableVariables bindables;
@@ -792,6 +806,7 @@ int procevents(coreState *cs)
     SDL_Keycode kc;
 
     Uint8 rc = 0;
+    Uint8 rc2 = 0; //for alt button (for hold)
 
     if(cs->mouse_left_down == BUTTON_PRESSED_THIS_FRAME)
     {
@@ -913,28 +928,29 @@ int procevents(coreState *cs)
                 k = &cs->keys_raw;
                 if(joy)
                 {
-                    rc = SDL_JoystickGetButton(joy, 0);
+                    rc = SDL_JoystickGetButton(joy, JOY_A);
                     if(!rc)
                         k->a = 0;
                     if(rc && k->a == 0)
                         k->a = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 1);
+                    rc = SDL_JoystickGetButton(joy, JOY_B);
                     if(!rc)
                         k->b = 0;
                     if(rc && k->b == 0)
                         k->b = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 2);
+                    rc = SDL_JoystickGetButton(joy, JOY_X);
                     if(!rc)
                         k->c = 0;
                     if(rc && k->c == 0)
                         k->c = 1;
 
-                    rc = SDL_JoystickGetButton(joy, 3);
-                    if(!rc)
+                    rc = SDL_JoystickGetButton(joy, JOY_Y);
+                    rc2 = SDL_JoystickGetButton(joy, JOY_L1);
+                    if(!rc && !rc2)
                         k->d = 0;
-                    if(rc && k->d == 0)
+                    if((rc || rc2) && k->d == 0)
                         k->d = 1;
 
                     rc = SDL_JoystickGetButton(joy, 10);
