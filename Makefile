@@ -46,6 +46,7 @@ ROMFS		:=  romfs
 
 APP_TITLE   := Shiromino Switch
 APP_AUTHOR  := saaaahil
+APP_VERSION := 1.0.1
 
 #---------------------------------------------------------------------------------
 # options for code generation

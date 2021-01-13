@@ -1164,7 +1164,7 @@ int mload_main(game_t *g, int val)
     m->value_text_rgba = 0xA0A0FFFF;
 
 
-    d->menu[4] = std_game_multiopt_create(g->origin, MODE_G3_MASTER, 10, bfromcstr("G2.5 MASTER"));
+    d->menu[4] = std_game_multiopt_create(g->origin, MODE_G3_MASTER, 10, bfromcstr("G3 MASTER"));
     m = d->menu[4];
     d6 = (struct game_multiopt_data *)m->data;
     if(d->main_menu_data.selection == 4)
