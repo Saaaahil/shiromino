@@ -679,6 +679,11 @@ int run(coreState *cs)
 
         if(cs->p1game)
         {
+           /* if(cs->button_emergency_override)
+            {
+                gfx_draw_emergency_bg_darken(cs);
+                continue;
+            }*/
             if(procgame(cs->p1game, !cs->button_emergency_override))
             {
                 cs->p1game->quit(cs->p1game);
@@ -986,6 +991,18 @@ int procevents(coreState *cs)
                         k->right = 0;
                     if(rc && k->right == 0)
                         k->right = 1;
+
+                    //pause?
+                    rc = SDL_JoystickGetButton(joy, JOY_MINUS);
+                    //if(!rc)
+                    //    cs->button_emergency_override = 0;
+                    if(cs->p1game)
+                    {
+                        if(rc && cs->button_emergency_override == 0)
+                            cs->button_emergency_override = 1;
+                        else if(rc && cs->button_emergency_override == 1)
+                            cs->button_emergency_override = 0;
+                    }
                 }
 
                 break;

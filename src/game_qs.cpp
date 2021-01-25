@@ -1226,6 +1226,9 @@ int qs_game_frame(game_t *g)
             return 0;
     }
 
+    if(cs->button_emergency_override)
+        return 0;
+
     if(c->init < 120)
     {
         if(c->init == 0 || c->init == 60)
