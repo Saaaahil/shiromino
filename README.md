@@ -1,4 +1,4 @@
-# shiromino_switch
+# shiromino switch
 
 ## Building
 Dependencies: devkitPro (run installer for switch development), use pacman to get: switch-sdl2, switch-sdl2_image, switch-sdl2_mixer
